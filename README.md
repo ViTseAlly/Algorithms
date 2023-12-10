@@ -1,2 +1,2 @@
 # Algorithms
-Linked List algorithm (single linked)
+My personal implementations of various popular algorithms
