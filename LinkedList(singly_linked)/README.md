@@ -4,13 +4,13 @@
 The Node structure defines the building block of the linked list. It contains a character (current) and a pointer to the next node (next).
 Two constructors are provided: a default constructor and a parameterized constructor that initializes the node with specific values.
 ```cpp
-struct Node {
-    char current;    // Data of the node
-    Node* next;      // Pointer to the next node
-
-    // Constructors for the Node structure
-    Node() {};                           // Default constructor
-    Node(char curV, Node* nextV) : current(curV), next(nextV) {};  // Parameterized constructor
+struct Node
+{
+  char current;
+  Node* next;
+  Node* prev;
+  Node() : current(char()), next(nullptr), prev(nullptr) {}
+  Node(Node* prevV, char curV, Node* nextV) : current(curV), next(nextV), prev(prevV) {}
 };
 ```
 ## LinkedList Class
@@ -20,60 +20,132 @@ The destructor is responsible for freeing memory by deleting all nodes in the li
 addNode method adds a new node with the given value to the end of the list.
 getNodes method displays the characters stored in each node of the linked list.
 ```cpp
-class LinkedL
-ist {
+class LinkedList
+{
 public:
-    // Constructors and destructor
-    LinkedList() : node(nullptr) {};
-    ~LinkedList();
-    
-    // Method to add a node to the linked list
-    void addNode(char value);
-    
-    // Method to display all nodes in the linked list
-    void getNodes();
+  LinkedList() : _nodes(nullptr) {}
+  ~LinkedList();
+  void setValue(char _value);
+  void deleteValue();
+  void deleteValue(char _value);
+  void getList();
 
 private:
-    Node* node;    // Head node of the linked list
+  Node* _nodes;
 };
 ```
 ## Destructor Implementation
 The destructor iterates through each node in the linked list, deletes it, and moves to the next node until the end of the list is reached.
 
 ```cpp
-LinkedList::~LinkedList() {
-    Node* current = node;
-    while (current != nullptr) {
-        Node* next = current->next;
-        delete current;
-        current = next;
-    }
+LinkedList::~LinkedList()
+{
+  Node* current = _nodes;
+  while (current != nullptr)
+  {
+    Node* next = current->next;
+    delete current;
+    current = next;
+  }
 }
 ```
 ## Method to Add a Node
 addNode creates a new node with the given value and adds it to the end of the linked list.
 ```cpp
-void LinkedList::addNode(char value) {
-    Node* cur = new Node(value, nullptr);
-    if (node == nullptr) 
-        node = cur;
-    else {
-        Node* current = node;
-        while (current->next != nullptr) 
-            current = current->next;
-        current->next = cur;
+void LinkedList::setValue(char _value)
+{
+  Node* newNode = new Node(nullptr, _value, nullptr);
+  if (_nodes == nullptr)
+  {
+    _nodes = newNode;
+  }
+  else
+  {
+    Node* current = _nodes;
+    while (current->next != nullptr)
+    {
+      current = current->next;
     }
+    current->next = newNode;
+    newNode->prev = current;
+  }
 }
 ```
 ## Method to Display Nodes
 getNodes traverses the linked list and prints the characters stored in each node to the standard output.
 ```cpp
-void LinkedList::getNodes() {
-    Node* value = node;
-    while (value != nullptr) {
-        std::cout << value->current;
-        value = value->next;
-    }
+void LinkedList::getList()
+{
+  Node* current = _nodes;
+  while (current != nullptr)
+  {
+    std::cout << current->current << " ";
+    current = current->next;
+  }
+}
+```
+
+## Delete last element
+Method fing nullptr Node and delete them.
+```cpp
+void LinkedList::deleteValue()
+{
+  if (_nodes == nullptr)
+  {
+    return;
+  }
+
+  Node* current = _nodes;
+  while (current->next != nullptr)
+  {
+    current = current->next;
+  }
+
+  if (current->prev != nullptr)
+  {
+    current->prev->next = nullptr; 
+  }
+  else
+  {
+    _nodes = nullptr; 
+  }
+
+  delete current;
+}
+```
+
+##Delete node by value
+Method fing valie and deleted node, displacing the remaining nodes that followed it
+```cpp
+void LinkedList::deleteValue(char _value)
+{
+  Node* current = _nodes;
+  while (current != nullptr && current->current != _value)
+  {
+    current = current->next;
+  }
+
+  if (current == nullptr)
+  {
+    std::cout << "Value not found in the list" << std::endl;
+    return;
+  }
+
+  if (current->prev != nullptr)
+  {
+    current->prev->next = current->next;
+  }
+  else
+  {
+    _nodes = current->next;
+  }
+
+  if (current->next != nullptr)
+  {
+    current->next->prev = current->prev;
+  }
+
+  delete current;
 }
 ```
 
